@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Strata Artificial Intelligence</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 26'%3E%3Cpolygon points='16,1 30,6 16,11 2,6' fill='%2306b6d4'/%3E%3Cpolygon points='16,8 30,13 16,18 2,13' fill='%2306b6d4' opacity='0.6'/%3E%3Cpolygon points='16,15 30,20 16,25 2,20' fill='%2306b6d4' opacity='0.3'/%3E%3C/svg%3E">
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.2/marked.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  
+  <link rel="stylesheet" href="Strata Artificial Intelligence.css">
+</head>
+<body>
+
+<div id="authScreen" class="auth-screen">
+  <div class="auth-card">
+    <div class="auth-brand">
+      <svg class="logo-mark logo-mark-lg" viewBox="0 0 32 26" xmlns="http://www.w3.org/2000/svg">
+        <polygon points="16,1 30,6 16,11 2,6" fill="currentColor"></polygon>
+        <polygon points="16,8 30,13 16,18 2,13" fill="currentColor" opacity="0.6"></polygon>
+        <polygon points="16,15 30,20 16,25 2,20" fill="currentColor" opacity="0.3"></polygon>
+      </svg>
+      <span class="auth-name">Strata</span>
+    </div>
+
+    <div id="loginPanel" class="auth-panel">
+      <h1>Welcome back</h1>
+      <p class="auth-sub">Sign in to continue your conversations.</p>
+      <form id="loginForm">
+        <label>Username</label>
+        <input type="text" id="loginUsername" autocomplete="username" required>
+        <label>Password</label>
+        <input type="password" id="loginPassword" autocomplete="current-password" required>
+        <div id="loginError" class="auth-error"></div>
+        <button type="submit" class="auth-btn">Sign in</button>
+      </form>
+      <div class="auth-links">
+        <a id="goSignup">Create an account</a>
+        <a id="goForgot">Forgot password?</a>
+      </div>
+    </div>
+
+    <div id="signupPanel" class="auth-panel hidden">
+      <h1>Create your account</h1>
+      <p class="auth-sub">Choose a username and password to get started.</p>
+      <form id="signupForm">
+        <label>Username</label>
+        <input type="text" id="signupUsername" autocomplete="username" minlength="3" required>
+        <label>Password</label>
+        <input type="password" id="signupPassword" autocomplete="new-password" minlength="8" required>
+        <label>Confirm password</label>
+        <input type="password" id="signupConfirm" autocomplete="new-password" minlength="8" required>
+        <div id="signupError" class="auth-error"></div>
+        <button type="submit" class="auth-btn">Create account</button>
+      </form>
+      <div class="auth-links">
+        <a id="goLoginFromSignup">Already have an account? Sign in</a>
+      </div>
+    </div>
+
+    <div id="recoveryPanel" class="auth-panel hidden">
+      <h1>Save your recovery passkey</h1>
+      <p class="auth-sub">This one-in-a-trillion code is the only way to reset your password. Store it somewhere safe — it will not be shown again.</p>
+      <div id="recoveryCodeDisplay" class="recovery-code"></div>
+      <button id="copyRecoveryBtn" class="auth-btn secondary"><i class="ph ph-copy"></i> Copy code</button>
+      <button id="recoveryContinueBtn" class="auth-btn">I've saved it, continue</button>
+    </div>
+
+    <div id="forgotPanel" class="auth-panel hidden">
+      <h1>Reset your password</h1>
+      <p class="auth-sub">Enter your username and recovery passkey.</p>
+      <form id="forgotForm">
+        <label>Username</label>
+        <input type="text" id="forgotUsername" autocomplete="username" required>
+        <label>Recovery passkey</label>
+        <input type="text" id="forgotCode" placeholder="XXXX-XXXX-XXXX" required>
+        <label>New password</label>
+        <input type="password" id="forgotNewPassword" autocomplete="new-password" minlength="8" required>
+        <div id="forgotError" class="auth-error"></div>
+        <button type="submit" class="auth-btn">Reset password</button>
+      </form>
+      <div class="auth-links">
+        <a id="goLoginFromForgot">Back to sign in</a>
+      </div>
+    </div>
+
+    <div id="newRecoveryPanel" class="auth-panel hidden">
+      <h1>Your new recovery passkey</h1>
+      <p class="auth-sub">Your password was reset and a new recovery passkey was generated. Save it now.</p>
+      <div id="newRecoveryCodeDisplay" class="recovery-code"></div>
+      <button id="copyNewRecoveryBtn" class="auth-btn secondary"><i class="ph ph-copy"></i> Copy code</button>
+      <button id="newRecoveryContinueBtn" class="auth-btn">Continue to sign in</button>
+    </div>
+  </div>
+</div>
+
+<div id="appScreen" class="app hidden">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-top">
+      <div class="brand">
+        <svg class="logo-mark logo-mark-sm" viewBox="0 0 32 26" xmlns="http://www.w3.org/2000/svg">
+          <polygon points="16,1 30,6 16,11 2,6" fill="currentColor"></polygon>
+          <polygon points="16,8 30,13 16,18 2,13" fill="currentColor" opacity="0.6"></polygon>
+          <polygon points="16,15 30,20 16,25 2,20" fill="currentColor" opacity="0.3"></polygon>
+        </svg>
+        <span class="brand-name">Strata</span>
+      </div>
+      <div class="new-chat-row">
+        <button id="newChatBtn" class="new-chat-btn"><i class="ph ph-plus"></i> New chat</button>
+        <button id="newFolderBtn" class="square-btn" aria-label="New folder" title="New folder"><i class="ph ph-folder-plus"></i></button>
+      </div>
+    </div>
+    <div class="sidebar-search">
+      <i class="ph ph-magnifying-glass"></i>
+      <input type="text" id="searchChats" placeholder="Search chats and messages">
+    </div>
+    <div id="chatList" class="chat-list"></div>
+    <div class="sidebar-bottom">
+      <div class="user-pill" id="userPill" role="button">
+        <span class="user-avatar" id="userAvatar"></span>
+        <span class="user-name" id="userNameLabel"></span>
+      </div>
+      <button id="accountBtn" class="icon-text-btn"><i class="ph ph-user"></i> Account</button>
+      <button id="libraryBtn" class="icon-text-btn"><i class="ph ph-books"></i> Library</button>
+      <button id="settingsBtn" class="icon-text-btn"><i class="ph ph-gear"></i> Settings</button>
+      <button id="logoutBtn" class="icon-text-btn"><i class="ph ph-sign-out"></i> Log out</button>
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <button id="menuToggle" class="menu-toggle"><i class="ph ph-list"></i></button>
+      <div class="chat-title" id="chatTitle">New chat</div>
+      <button id="personaBtn" class="chip-btn" title="Choose a persona for this chat"><i class="ph ph-user-circle"></i><span id="personaLabel">Default</span><i class="ph ph-caret-down"></i></button>
+      <span id="tokenPill" class="token-pill hidden" title="Tokens reported by the API for replies in this chat"></span>
+      <button id="exportChatBtn" class="icon-btn" aria-label="Export chat" title="Export this chat as Markdown"><i class="ph ph-export"></i></button>
+    </header>
+
+    <div id="messages" class="messages">
+      <div id="emptyState" class="empty-state">
+        <svg class="logo-mark logo-mark-xl" viewBox="0 0 32 26" xmlns="http://www.w3.org/2000/svg">
+          <polygon points="16,1 30,6 16,11 2,6" fill="currentColor"></polygon>
+          <polygon points="16,8 30,13 16,18 2,13" fill="currentColor" opacity="0.6"></polygon>
+          <polygon points="16,15 30,20 16,25 2,20" fill="currentColor" opacity="0.3"></polygon>
+        </svg>
+        <h2>How can I help you today?</h2>
+        <p>Set your API key in Settings to begin.</p>
+      </div>
+    </div>
+
+    <div class="composer-container">
+      <div id="stagedFiles" class="staged-files"></div>
+      <div class="composer-inner">
+        <button id="attachBtn" class="attach-btn" aria-label="Attach file"><i class="ph ph-paperclip"></i></button>
+        <input type="file" id="fileInput" multiple accept=".txt,.json,.csv,.md,.js,.css,.html,.py,.xml,.sh" hidden>
+        <button id="templateBtn" class="attach-btn" aria-label="Insert template" title="Insert a saved prompt template"><i class="ph ph-lightning"></i></button>
+        <textarea id="promptInput" placeholder="Message Strata..." rows="1"></textarea>
+        <button id="sendBtn" class="send-btn" aria-label="Send"><i class="ph-fill ph-arrow-up"></i></button>
+        <button id="stopBtn" class="stop-btn hidden" aria-label="Stop"><i class="ph-fill ph-stop"></i></button>
+      </div>
+      <div id="tokenHint" class="composer-hint"></div>
+    </div>
+  </main>
+</div>
+
+<div id="settingsModal" class="modal hidden">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h2>Settings</h2>
+      <button id="closeSettings" class="modal-close"><i class="ph ph-x"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="settings-row">
+        <label>Provider</label>
+        <select id="providerSelect">
+          <option value="groq">Groq Cloud (openai/gpt-oss-120b)</option>
+        </select>
+      </div>
+      <div class="settings-row">
+        <label>API key</label>
+        <input type="password" id="apiKeyInput" placeholder="Paste your API key">
+      </div>
+      <div class="settings-row">
+        <label>Temperature <span id="tempValue" style="float: right; color: var(--accent);">0.7</span></label>
+        <input type="range" id="temperatureInput" min="0" max="2" step="0.1" value="0.7">
+      </div>
+      <div class="settings-row">
+        <label>System prompt</label>
+        <textarea id="systemPromptInput" rows="3" placeholder="Instructions for Strata..."></textarea>
+      </div>
+      
+      <div class="settings-row">
+        <label>Data Backup & Restore</label>
+        <div class="settings-actions">
+          <button id="exportZipBtn" class="auth-btn secondary"><i class="ph ph-download-simple"></i> Export Data (ZIP)</button>
+          <button id="importZipBtn" class="auth-btn secondary"><i class="ph ph-upload-simple"></i> Import Data (ZIP)</button>
+          <input type="file" id="importZipInput" accept=".zip" hidden>
+        </div>
+      </div>
+
+      <div class="settings-row">
+        <label>Theme</label>
+        <div class="theme-toggle">
+          <button id="themeDark" class="theme-btn"><i class="ph ph-moon"></i> Dark</button>
+          <button id="themeLight" class="theme-btn"><i class="ph ph-sun"></i> Light</button>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button id="saveSettingsBtn" class="auth-btn">Save changes</button>
+    </div>
+  </div>
+</div>
+
+<div id="libraryModal" class="modal hidden">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h2>Library</h2>
+      <button id="closeLibrary" class="modal-close"><i class="ph ph-x"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="library-tabs">
+        <button id="tabPersonas" class="active">Personas</button>
+        <button id="tabTemplates">Templates</button>
+      </div>
+      <div id="libraryList" class="library-list"></div>
+      <div id="libraryEditor" class="library-editor hidden">
+        <label for="libraryName">Name</label>
+        <input type="text" id="libraryName" maxlength="40">
+        <label for="libraryText" id="libraryTextLabel">Instructions</label>
+        <textarea id="libraryText" rows="6"></textarea>
+        <div id="libraryError" class="auth-error"></div>
+        <div class="settings-actions">
+          <button id="librarySaveBtn" class="auth-btn">Save</button>
+          <button id="libraryCancelBtn" class="auth-btn secondary">Cancel</button>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button id="libraryAddBtn" class="auth-btn secondary"><i class="ph ph-plus"></i> Add new</button>
+    </div>
+  </div>
+</div>
+
+<div id="accountScreen" class="account-screen hidden">
+  <header class="account-topbar">
+    <button id="backToChatBtn" class="back-btn"><i class="ph ph-arrow-left"></i> Back to chat</button>
+    <div class="account-topbar-brand">
+      <svg class="logo-mark logo-mark-sm" viewBox="0 0 32 26" xmlns="http://www.w3.org/2000/svg">
+        <polygon points="16,1 30,6 16,11 2,6" fill="currentColor"></polygon>
+        <polygon points="16,8 30,13 16,18 2,13" fill="currentColor" opacity="0.6"></polygon>
+        <polygon points="16,15 30,20 16,25 2,20" fill="currentColor" opacity="0.3"></polygon>
+      </svg>
+      <span>Account</span>
+    </div>
+  </header>
+
+  <div class="account-page">
+    <div class="account-profile">
+      <span class="account-avatar" id="accountAvatar"></span>
+      <div>
+        <div class="account-username" id="accountUsername"></div>
+        <div class="account-meta" id="accountCreated"></div>
+      </div>
+    </div>
+
+    <div class="account-section">
+      <h3>Change password</h3>
+      <p class="auth-sub">Update the password you use to sign in.</p>
+      <form id="changePasswordForm">
+        <label>Current password</label>
+        <input type="password" id="currentPasswordInput" autocomplete="current-password" required>
+        <label>New password</label>
+        <input type="password" id="newPasswordInput" autocomplete="new-password" minlength="8" required>
+        <label>Confirm new password</label>
+        <input type="password" id="confirmPasswordInput" autocomplete="new-password" minlength="8" required>
+        <div id="changePasswordError" class="auth-error"></div>
+        <div id="changePasswordSuccess" class="auth-success"></div>
+        <button type="submit" class="auth-btn secondary account-btn">Update password</button>
+      </form>
+    </div>
+
+    <div class="account-section">
+      <h3>Recovery passkey</h3>
+      <p class="auth-sub">Generate a new recovery passkey. Your old one will stop working immediately.</p>
+      <input type="password" id="recoveryConfirmPassword" placeholder="Confirm your password" autocomplete="current-password">
+      <div id="regenerateError" class="auth-error"></div>
+      <button id="regenerateRecoveryBtn" class="auth-btn secondary account-btn">Generate new passkey</button>
+      <div id="newAccountRecoveryDisplay" class="recovery-code hidden"></div>
+    </div>
+
+    <div class="account-section danger-zone">
+      <h3>Danger zone</h3>
+      <p class="auth-sub">Permanently delete your account, chats and settings from this browser. This can't be undone.</p>
+      <input type="password" id="deleteConfirmPassword" placeholder="Confirm your password" autocomplete="current-password">
+      <div id="deleteAccountError" class="auth-error"></div>
+      <button id="deleteAccountBtn" class="auth-btn danger-btn account-btn">Delete account</button>
+    </div>
+  </div>
+</div>
+
+<script src="Strata Artificial Intelligence.js"></script>
+</body>
+</html>
